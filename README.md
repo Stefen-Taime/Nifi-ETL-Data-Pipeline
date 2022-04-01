@@ -13,12 +13,8 @@ Demo of [Nifi Etl]
 
     ```bash
     git clone https://github.com/Stefen-Taime/Nifi-ETL-Data-Pipeline
+    docker-compose up -d
     ```
-
-    ```bash
-  docker-compose up -d
-    ```
-
 On the terminal: chmod -R 777 nifi
 
 go to localhost:8091 and import Stack_V2.xml template
