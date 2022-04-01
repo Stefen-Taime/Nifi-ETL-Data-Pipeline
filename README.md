@@ -3,7 +3,7 @@
 
 ## Architecture
 
-(<a href="https://zupimages.net/viewer.php?id=22/13/k20c.jpeg"><img src="https://zupimages.net/up/22/13/k20c.jpeg" alt="" />
+<a href="https://zupimages.net/viewer.php?id=22/13/k20c.jpeg"><img src="https://zupimages.net/up/22/13/k20c.jpeg" alt="" />
 
 ## Set-up
 
@@ -29,4 +29,3 @@
 ## References
 
 - [PostgreSQL JDBC Driver](https://jdbc.postgresql.org/download.html)
-- 
