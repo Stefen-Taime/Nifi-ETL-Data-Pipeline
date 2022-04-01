@@ -1,11 +1,9 @@
 # Nifi-ETL-Data-Pipeline
 
 
-Demo of [Nifi Etl]
-
 ## Architecture
 
-![Architecture](<a href="https://zupimages.net/viewer.php?id=22/13/k20c.jpeg"><img src="https://zupimages.net/up/22/13/k20c.jpeg" alt="" /></a>)
+(<a href="https://zupimages.net/viewer.php?id=22/13/k20c.jpeg"><img src="https://zupimages.net/up/22/13/k20c.jpeg" alt="" />
 
 ## Set-up
 
