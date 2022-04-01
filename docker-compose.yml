@@ -1,0 +1,202 @@
+version: "3"
+services:         
+    # scheduler & monitoring service
+    #airflow-webserver:
+     #   hostname: myairflow
+     #   container_name: airflow_container
+      #  image: 'puckel/docker-airflow:1.10.9'  # latest image as of 2021-11-08.
+       # ports:
+       #     - 8085:8080
+       # networks:
+       #     - dataworld
+      #  volumes:
+         #   - airflow-data:/usr/local/airflow/data
+         #   - ./airflow/logs:/usr/local/airflow/logs
+        #    - ./airflow/dags:/usr/local/airflow/dags
+        #    - ./airflow/requirements/requirements.txt:/requirements.txt
+        #restart: on-failure
+      #  healthcheck:
+         #   test: ["CMD", "curl", "-f", "http://myairflow:8080/admin/"]
+       #     interval: 30s
+          #  timeout: 20s
+          #  retries: 3
+
+    # configuration manager for NiFi
+    zookeeper:
+        hostname: myzookeeper
+        container_name: zookeeper_container
+        image: 'bitnami/zookeeper:3.7.0'  # latest image as of 2021-11-08.
+        environment:
+            - ALLOW_ANONYMOUS_LOGIN=yes
+        networks:
+            - dataworld
+        restart: always
+        
+    
+   # adminer:
+     #   image: adminer:latest
+     #   ports:
+     #     - 8090:8080/tcp
+     #   deploy:
+       #  restart_policy:
+       #    condition: on-failure     
+        
+        
+        
+  #  mysql:
+    #    container_name: mysql
+    #    image: mysql:5.7 # 8.0 maybe?
+    #    ports:
+     #     - 3006:3006
+     #   environment:
+     #     - MYSQL_ROOT_PASSWORD=torunjug
+    #    volumes:
+      #    - ./mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      #    - ./mysql/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      #  command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+      #  networks:
+        #    - dataworld    
+        
+
+    # data extraction, transformation and load service
+    nifi:
+        hostname: mynifi
+        container_name: nifi_container
+        image: 'apache/nifi:1.14.0'  # latest image as of 2021-11-08.
+        ports:
+            - 8091:8080
+        networks:
+            - dataworld
+        volumes:
+            - nifi-database_repository:/opt/nifi/nifi-current/database_repository
+            - nifi-flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+            - nifi-content_repository:/opt/nifi/nifi-current/content_repository
+            - nifi-provenance_repository:/opt/nifi/nifi-current/provenance_repository
+            - nifi-conf:/opt/nifi/nifi-current/conf
+            - nifi-state:/opt/nifi/nifi-current/state
+            - ./nifi/logs:/opt/nifi/nifi-current/logs
+            - ./nifi/jdbc:/opt/nifi/nifi-current/jdbc
+            - ./nifi/credentials:/opt/nifi/nifi-current/credentials
+        environment:
+            - NIFI_WEB_HTTP_PORT=8080
+            - NIFI_CLUSTER_IS_NODE=true
+            - NIFI_CLUSTER_NODE_PROTOCOL_PORT=8082
+            - NIFI_ZK_CONNECT_STRING=myzookeeper:2181
+            - NIFI_ELECTION_MAX_WAIT=30 sec
+            - NIFI_SENSITIVE_PROPS_KEY='12345678901234567890A'
+        restart: on-failure
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://mynifi:8080/nifi/"]
+            interval: 30s
+            timeout: 20s
+            retries: 3
+
+    # version control for nifi flows
+    registry:
+        hostname: myregistry
+        container_name: registry_container
+        image: 'apache/nifi-registry:1.15.0'  # latest image as of 2021-11-09.
+        restart: on-failure
+        ports:
+            - 18080:18080
+        environment:
+            - LOG_LEVEL=INFO
+            - NIFI_REGISTRY_DB_DIR=/opt/nifi-registry/nifi-registry-current/database
+            - NIFI_REGISTRY_FLOW_PROVIDER=file
+            - NIFI_REGISTRY_FLOW_STORAGE_DIR=/opt/nifi-registry/nifi-registry-current/flow_storage
+        volumes:
+            - ./nifi_registry/database:/opt/nifi-registry/nifi-registry-current/database
+            - ./nifi_registry/flow_storage:/opt/nifi-registry/nifi-registry-current/flow_storage
+        networks:
+            - dataworld
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://myregistry:18080/nifi-registry/"]
+            interval: 30s
+            timeout: 20s
+            retries: 3
+
+    # relational database
+    postgres:
+        hostname: mypostgres
+        container_name: postgres_container
+        image: 'postgres:14-bullseye'  # latest image as of 2021-11-08
+        environment:
+            POSTGRES_USER: 'postgres'
+            POSTGRES_PASSWORD: 'postgres'
+            PGDATA: /data/postgres
+        volumes:
+            - postgres:/data/postgres
+        ports:
+            - 5432:5432
+        networks:
+            - dataworld
+        restart: on-failure
+        healthcheck:
+            test: ["CMD", "pg_isready"]
+            interval: 30s
+            timeout: 20s
+            retries: 3
+            
+          
+         
+
+ 
+            
+            
+    # database administration tool
+    pgadmin:
+        hostname: mypgadmin
+        container_name: pgadmin_container
+        image: 'dpage/pgadmin4:6.1'  # latest image as of 2021-11-08
+        environment:
+            PGADMIN_DEFAULT_EMAIL: 'pgadmin4@pgadmin.org'
+            PGADMIN_DEFAULT_PASSWORD: 'admin'
+            PGADMIN_CONFIG_SERVER_MODE: 'False'
+        volumes:
+            - pgadmin:/var/lib/pgadmin
+        ports:
+            - 5050:80
+        networks:
+            - dataworld
+        restart: on-failure
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://mypgadmin:80/misc/ping"]
+            interval: 30s
+            timeout: 20s
+            retries: 3
+
+    # object storage
+  #  minio:
+    #    hostname: myminio
+   #     container_name: minio_container
+    #    image: 'bitnami/minio:2021' # latest image as of 2021-11-08
+     #   environment:
+        #    MINIO_ACCESS_KEY: minio_admin
+       #     MINIO_SECRET_KEY: minio_password
+       # ports:
+       #     - 9000:9000
+      #      - 9001:9001
+      #  volumes:
+      #      - ./minio/data:/data
+      #  networks:
+      #      - dataworld
+      #  healthcheck:
+       #     test: ["CMD", "curl", "-f", "http://myminio:9000/minio/health/live"]
+       #     interval: 30s
+        #    timeout: 20s
+         #   retries: 3
+
+volumes:
+  #  airflow-data:
+    nifi-database_repository:
+    nifi-flowfile_repository:
+    nifi-content_repository:
+    nifi-provenance_repository:
+    nifi-state:
+    nifi-conf:
+    postgres:
+    pgadmin:
+
+networks:
+    dataworld:
+        driver: bridge
