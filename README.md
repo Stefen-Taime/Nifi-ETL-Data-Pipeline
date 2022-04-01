@@ -26,6 +26,10 @@
 
 <a href="https://zupimages.net/viewer.php?id=22/13/u61j.png"><img src="https://zupimages.net/up/22/13/u61j.png" alt="" />
 
+## Blog
+
+- [Medium](https://medium.com/@stefentaime/getting-started-with-etl-pipeline-data-engineering-using-api-apache-nifi-zookeeper-postgres-f96ae2faeb81) 
+    
 ## References
 
 - [PostgreSQL JDBC Driver](https://jdbc.postgresql.org/download.html)
