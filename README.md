@@ -16,9 +16,12 @@ Demo of [Nifi Etl]
     ```
 
     ```bash
- 2.   docker-compose up -d
+  docker-compose up -d
     ```
 
+On the terminal: chmod -R 777 nifi
+
+go to localhost:8091 and import Stack_V2.xml template
 
 
 ## Demo
