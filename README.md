@@ -23,7 +23,7 @@ Demo of [Nifi Etl]
 
 ## Demo
 
-<img src=<a href="https://zupimages.net/viewer.php?id=22/13/u61j.png"><img src="https://zupimages.net/up/22/13/u61j.png" alt="" /></a>>
+<a href="https://zupimages.net/viewer.php?id=22/13/u61j.png"><img src="https://zupimages.net/up/22/13/u61j.png" alt="" />
 
 ## References
 
