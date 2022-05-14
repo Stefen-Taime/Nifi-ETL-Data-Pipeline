@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} flights {% endblock %}</h1>
+    {% for flight in flights %}
+        <div class='flight'>
+            <h3>#departure_airport=> {{ flight[2] }} BY {{ flight[8] }}</h3>
+            <i><p>({{ flight[3] }} timezone)</p></i>
+            <p class='review'>{{ flight[1] }}</p>
+            <i><p>Arrival_airport {{ flight[5] }}</p></i>
+        </div>
+    {% endfor %}
+{% endblock %}
